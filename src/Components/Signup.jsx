@@ -1,20 +1,34 @@
-// src/Components/Signup.jsx
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const Signup = () => {
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add your registration logic here
-    // After successful signup, navigate to the login page
-    alert('Account created successfully! Please login.');
-    navigate('/login');
-    
+
+    try {
+      // Make a POST request to the register API
+      const response = await axios.post("http://localhost:5000/api/register", {
+        name: name,
+        email: email,
+        password: password,
+      });
+
+      if (response.status === 201) {
+        // Show success message
+        alert("Account created successfully! Please login.");
+        // Navigate to the login page
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("There was an error creating the account!", error);
+      alert("There was an error creating the account! Please try again.");
+    }
   };
 
   return (
@@ -29,15 +43,17 @@ const Signup = () => {
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="mt-2 p-2 w-full border rounded-lg"
+              required
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700">Username</label>
+            <label className="block text-gray-700">Email</label>
             <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="mt-2 p-2 w-full border rounded-lg"
+              required
             />
           </div>
           <div className="mb-4">
@@ -47,14 +63,21 @@ const Signup = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-2 p-2 w-full border rounded-lg"
+              required
             />
           </div>
-          <button type="submit" className="w-full bg-customgreen text-white p-2 rounded-lg">
+          <button
+            type="submit"
+            className="w-full bg-customgreen text-white p-2 rounded-lg"
+          >
             Sign Up
           </button>
         </form>
         <p className="mt-4 text-center text-gray-600">
-          Already have an account? <Link to="/login" className="text-customgreen">Login</Link>
+          Already have an account?{" "}
+          <Link to="/login" className="text-customgreen">
+            Login
+          </Link>
         </p>
       </div>
     </div>
