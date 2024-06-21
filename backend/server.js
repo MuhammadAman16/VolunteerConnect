@@ -1,7 +1,9 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import userRoutes from "./routes/userRoutes.js"; // Import the routes
+import userRoutes from "./routes/userRoutes.js";
+import eventRoutes from "./routes/eventRoutes.js";
+import participantRoutes from "./routes/participantRoutes.js";
 
 const app = express();
 const port = 5000;
@@ -21,6 +23,8 @@ mongoose
 
 // Use the routes from the separate routes file
 app.use("/api", userRoutes);
+app.use("/events", eventRoutes);
+app.use("/participants", participantRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

@@ -2,7 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import { useAuth } from "../AuthContext.jsx";
+
 const Login = ({ onLogin }) => {
+  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
@@ -17,10 +20,12 @@ const Login = ({ onLogin }) => {
       });
 
       if (response.status === 200) {
+        console.log(response.config.data);
         // Call the onLogin function passed via props
         onLogin(response.data);
+        login(response.config.data);
         // Navigate to the dashboard or home page after successful login
-        navigate("/dashboard"); // Adjust the route as necessary
+        navigate("/"); // Adjust the route as necessary
       }
     } catch (error) {
       console.error("There was an error logging in!", error);
