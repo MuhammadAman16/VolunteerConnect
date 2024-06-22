@@ -24,7 +24,8 @@ const Login = ({ onLogin }) => {
         localStorage.setItem("jwt", response.data.token);
         // Call the onLogin function passed via props
         onLogin();
-        login(response.config.data);
+        const decodedToken = decodeToken(response.data.token);
+        login(decodedToken);
         // Navigate to the dashboard or home page after successful login
         navigate("/"); // Adjust the route as necessary
       }
@@ -77,5 +78,23 @@ const Login = ({ onLogin }) => {
     </div>
   );
 };
+const decodeToken = (token) => {
+  try {
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
 
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error("Error decoding token:", error);
+    return null;
+  }
+};
 export default Login;

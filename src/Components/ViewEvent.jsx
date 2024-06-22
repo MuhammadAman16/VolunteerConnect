@@ -23,10 +23,10 @@ const ViewEvent = () => {
         setEvent(response.data);
         // Populate name and email with user information on component mount
         if (user) {
-          const userData = JSON.parse(user);
-          console.log(userData);
+          console.log(user.user.name);
           // Check if user and user.email are defined
-          setParticipantEmail(userData.email);
+          setParticipantEmail(user.user.email);
+          setParticipantName(user.user.name);
         }
       } catch (error) {
         setError(error.message);

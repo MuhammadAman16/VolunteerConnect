@@ -39,49 +39,33 @@ const App = () => {
     setIsLoggedIn(false);
   };
 
-  const redirectTo = isLoggedIn ? "/" : "/login";
-
   return (
     <AuthProvider>
       <Router>
         <div>
-          <Routes>
-            {isLoggedIn ? (
-              <>
-                <Route
-                  path="/"
-                  element={
-                    <>
-                      <Navbar
-                        toggleSidebar={toggleSidebar}
-                        onLogout={handleLogout}
-                      />
-                      <Sidebar
-                        isSidebarOpen={isSidebarOpen}
-                        toggleSidebar={toggleSidebar}
-                      />
-                      <div className="content">
-                        <Routes>
-                          <Route path="/" element={<Homepage />} />
-                          <Route path="/events" element={<Event />} />
-                          <Route path="/events/:id" element={<ViewEvent />} />
-                        </Routes>
-                      </div>
-                    </>
-                  }
-                />
-              </>
-            ) : (
-              <>
-                <Route
-                  path="/login"
-                  element={<Login onLogin={handleLogin} />}
-                />
-                <Route path="/signup" element={<Signup />} />
-              </>
-            )}
-            <Route path="*" element={<Navigate to={redirectTo} />} />
-          </Routes>
+          {isLoggedIn ? (
+            <>
+              <Navbar toggleSidebar={toggleSidebar} onLogout={handleLogout} />
+              <Sidebar
+                isSidebarOpen={isSidebarOpen}
+                toggleSidebar={toggleSidebar}
+              />
+              <div className="content">
+                <Routes>
+                  <Route path="/" element={<Homepage />} />
+                  <Route path="/events" element={<Event />} />
+                  <Route path="/events/:id" element={<ViewEvent />} />
+                  <Route path="*" element={<Navigate to="/" />} />
+                </Routes>
+              </div>
+            </>
+          ) : (
+            <Routes>
+              <Route path="/login" element={<Login onLogin={handleLogin} />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="*" element={<Navigate to="/login" />} />
+            </Routes>
+          )}
         </div>
       </Router>
     </AuthProvider>
