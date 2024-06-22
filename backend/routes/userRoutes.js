@@ -1,9 +1,11 @@
 import express from "express";
 import bcrypt from "bcrypt";
 import User from "../models/users.js";
+import jwt from "jsonwebtoken";
+import { check, validationResult } from "express-validator";
 
 const router = express.Router();
-
+const jwtSecret = "secret123";
 // Define an API endpoint to fetch users
 router.get("/", async (req, res) => {
   try {
@@ -16,29 +18,58 @@ router.get("/", async (req, res) => {
 });
 
 // Define a login endpoint
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    // Find the user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ message: "Invalid email or password" });
+router.post(
+  "/login",
+  [
+    check("email", "Please include a valid email").isEmail(),
+    check("password", "Password is required").exists(),
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
     }
 
-    // Compare the provided password with the stored hash
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
+    const { email, password } = req.body;
 
-    // Successful login
-    res.status(200).json({ message: "Login successful" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error");
+    try {
+      // Find the user by email
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(400).json({ message: "Invalid email or password" });
+      }
+
+      // Compare the provided password with the stored hash
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ message: "Invalid email or password" });
+      }
+
+      // Create payload for JWT
+      const payload = {
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+      };
+
+      // Sign the JWT token
+      jwt.sign(
+        payload,
+        jwtSecret,
+        { expiresIn: "1h" }, // Token expires in 1 hour
+        (err, token) => {
+          if (err) throw err;
+          res.status(200).json({ token });
+        }
+      );
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Server error");
+    }
   }
-});
+);
 
 // Define a register endpoint
 router.post("/register", async (req, res) => {

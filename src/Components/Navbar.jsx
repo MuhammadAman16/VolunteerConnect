@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Navbar = ({ toggleSidebar, onLogout }) => {
   const navigate = useNavigate();
@@ -7,12 +7,10 @@ const Navbar = ({ toggleSidebar, onLogout }) => {
 
   const handleLogout = () => {
     onLogout();
-    navigate('/login');
   };
 
-
-  if (location.pathname === '/login') {
-    return null; 
+  if (location.pathname === "/login") {
+    return null;
   }
 
   return (
@@ -34,10 +32,17 @@ const Navbar = ({ toggleSidebar, onLogout }) => {
             ></path>
           </svg>
         </button>
-        <h1 className="text-2xl font-bold text-customgreen1">Volunteer Connect</h1>
+        <h1 className="text-2xl font-bold text-customgreen1">
+          Volunteer Connect
+        </h1>
       </div>
 
-      <button className="text-base font-semibold bg-customgreen1 px-3 py-2 rounded-3xl text-white  hover:text-gray-900" onClick={handleLogout}>Logout</button>
+      <button
+        className="text-base font-semibold bg-customgreen1 px-3 py-2 rounded-3xl text-white  hover:text-gray-900"
+        onClick={handleLogout}
+      >
+        Logout
+      </button>
     </nav>
   );
 };

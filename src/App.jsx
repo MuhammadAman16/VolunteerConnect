@@ -1,12 +1,10 @@
-// src/App.jsx
 import "./App.css";
-import React from "react";
+import React, { useEffect } from "react";
 import Navbar from "./Components/Navbar.jsx";
 import Sidebar from "./Components/Sidebar.jsx";
 import Homepage from "./Components/Homepage.jsx";
 import Event from "./Components/Event.jsx";
 import ViewEvent from "./Components/ViewEvent.jsx";
-
 import Login from "./Components/Login.jsx";
 import Signup from "./Components/Signup.jsx";
 import {
@@ -21,46 +19,69 @@ const App = () => {
   const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
 
+  useEffect(() => {
+    const token = localStorage.getItem("jwt");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
   const handleLogin = () => {
-    setIsLoggedIn(true); // Example: set isLoggedIn to true upon successful login
+    setIsLoggedIn(true);
   };
 
   const handleLogout = () => {
-    setIsLoggedIn(false); // Example: set isLoggedIn to false upon logout
+    localStorage.removeItem("jwt");
+    setIsLoggedIn(false);
   };
+
+  const redirectTo = isLoggedIn ? "/" : "/login";
 
   return (
     <AuthProvider>
-      {" "}
-      {/* Wrap your app with AuthProvider */}
       <Router>
         <div>
-          {isLoggedIn ? (
-            <>
-              <Navbar toggleSidebar={toggleSidebar} />
-              <Sidebar
-                isSidebarOpen={isSidebarOpen}
-                toggleSidebar={toggleSidebar}
-              />
-              <div className="content">
-                <Routes>
-                  <Route path="/" element={<Homepage />} />
-                  <Route path="/events" element={<Event />} />
-                  <Route path="/events/:id" element={<ViewEvent />} />
-                </Routes>
-              </div>
-            </>
-          ) : (
-            <Routes>
-              <Route path="/login" element={<Login onLogin={handleLogin} />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="*" element={<Navigate to="/login" />} />
-            </Routes>
-          )}
+          <Routes>
+            {isLoggedIn ? (
+              <>
+                <Route
+                  path="/"
+                  element={
+                    <>
+                      <Navbar
+                        toggleSidebar={toggleSidebar}
+                        onLogout={handleLogout}
+                      />
+                      <Sidebar
+                        isSidebarOpen={isSidebarOpen}
+                        toggleSidebar={toggleSidebar}
+                      />
+                      <div className="content">
+                        <Routes>
+                          <Route path="/" element={<Homepage />} />
+                          <Route path="/events" element={<Event />} />
+                          <Route path="/events/:id" element={<ViewEvent />} />
+                        </Routes>
+                      </div>
+                    </>
+                  }
+                />
+              </>
+            ) : (
+              <>
+                <Route
+                  path="/login"
+                  element={<Login onLogin={handleLogin} />}
+                />
+                <Route path="/signup" element={<Signup />} />
+              </>
+            )}
+            <Route path="*" element={<Navigate to={redirectTo} />} />
+          </Routes>
         </div>
       </Router>
     </AuthProvider>

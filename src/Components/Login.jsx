@@ -20,9 +20,10 @@ const Login = ({ onLogin }) => {
       });
 
       if (response.status === 200) {
-        console.log(response.config.data);
+        console.log(response.data.token);
+        localStorage.setItem("jwt", response.data.token);
         // Call the onLogin function passed via props
-        onLogin(response.data);
+        onLogin();
         login(response.config.data);
         // Navigate to the dashboard or home page after successful login
         navigate("/"); // Adjust the route as necessary
