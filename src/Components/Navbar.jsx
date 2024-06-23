@@ -8,6 +8,7 @@ const Navbar = ({ toggleSidebar, onLogout }) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitMessage, setSubmitMessage] = useState(""); // State for success message
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // State for menu
 
   const handleLogout = () => {
     onLogout();
@@ -16,6 +17,11 @@ const Navbar = ({ toggleSidebar, onLogout }) => {
 
   const handleAddEvent = () => {
     setIsModalOpen(true);
+  };
+
+  const handleMyEvents = () => {
+    navigate("/my-events");
+    setIsMenuOpen(false); // Close the menu after navigation
   };
 
   if (location.pathname === "/login") {
@@ -55,11 +61,42 @@ const Navbar = ({ toggleSidebar, onLogout }) => {
             Add Volunteer Event
           </button>
           <button
-            className="text-base font-semibold bg-customgreen1 px-3 py-2 rounded-3xl text-white hover:text-gray-900"
+            className="text-base font-semibold bg-customgreen1 px-3 py-2 rounded-3xl text-white hover:text-gray-900 mr-4"
             onClick={handleLogout}
           >
             Logout
           </button>
+          <div className="relative">
+            <button
+              className="text-base  px-3 py-2 rounded-full text-gray-900 font-extrabold"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 6h.01M12 12h.01M12 18h.01"
+                />
+              </svg>
+            </button>
+            {isMenuOpen && (
+              <div className="absolute right-0 mt-5 w-48 bg-white  rounded-md shadow-lg z-50">
+                <button
+                  className="block w-full text-left px-4 py-3 text-sm text-gray-700 "
+                  onClick={handleMyEvents}
+                >
+                  My Events
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 

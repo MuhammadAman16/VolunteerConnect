@@ -50,7 +50,7 @@ const EventForm = ({ setIsModalOpen, setSubmitMessage }) => {
   };
 
   return (
-    <div className="bg-white p-6 rounded shadow-md w-96">
+    <div className="bg-white p-6 rounded shadow-md w-[50%] h-auto">
       <h2 className="text-xl mb-4">Add Volunteer Event</h2>
       <form onSubmit={handleFormSubmit}>
         {submitError && <div className="text-red-600 mb-4">{submitError}</div>}
@@ -113,14 +113,14 @@ const EventForm = ({ setIsModalOpen, setSubmitMessage }) => {
           <button
             type="button"
             onClick={handleCloseModal}
-            className="mr-2 px-4 py-2 border rounded bg-gray-200"
+            className="mr-2 px-4 py-1 border rounded-xl bg-gray-200"
             disabled={submitting}
           >
             Cancel
           </button>
           <button
             type="submit"
-            className="px-4 py-2 border rounded bg-customgreen1 text-white"
+            className="px-4 py-1 border rounded-xl bg-customgreen1 text-white"
             disabled={submitting}
           >
             {submitting ? "Submitting..." : "Submit"}
