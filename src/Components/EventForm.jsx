@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import axios from "axios";
+import { AuthContext } from "../AuthContext"; // Import AuthContext
 
-const EventForm = ({ setIsModalOpen, setSubmitMessage }) => {
+const EventForm = ({ setIsModalOpen, setSubmitMessage, userEmail }) => {
+  console.log(userEmail);
   const [formData, setFormData] = useState({
     name: "",
     date: "",
     description: "",
     image: "",
+    email: userEmail,
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
@@ -18,6 +21,7 @@ const EventForm = ({ setIsModalOpen, setSubmitMessage }) => {
       date: "",
       description: "",
       image: "",
+      email: userEmail,
     });
     setSubmitError(null);
   };
@@ -35,12 +39,14 @@ const EventForm = ({ setIsModalOpen, setSubmitMessage }) => {
         "http://localhost:5000/events",
         formData
       );
+      console.log(formData);
       setSubmitMessage(response.data.message); // Assuming response contains success message
       setFormData({
         name: "",
         date: "",
         description: "",
         image: "",
+        email: userEmail,
       });
     } catch (error) {
       setSubmitError("Failed to submit event information");
@@ -105,6 +111,20 @@ const EventForm = ({ setIsModalOpen, setSubmitMessage }) => {
             name="image"
             value={formData.image}
             onChange={handleChange}
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-bold mb-2" htmlFor="email">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            disabled
             className="w-full p-2 border rounded"
             required
           />

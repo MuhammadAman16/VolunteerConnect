@@ -1,11 +1,20 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import EventForm from "./EventForm"; // Adjust the path as per your project structure
+import { AuthContext } from "../AuthContext"; // Import AuthContext
 
 const Navbar = ({ toggleSidebar, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const { user } = useContext(AuthContext);
+  const [userEmail, setUserEmail] = useState("");
+  useEffect(() => {
+    if (user) {
+      const userMail = user.user.email;
+      setUserEmail(userMail);
+    }
+  }, [user]);
+  console.log(user);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [submitMessage, setSubmitMessage] = useState(""); // State for success message
 
@@ -68,6 +77,7 @@ const Navbar = ({ toggleSidebar, onLogout }) => {
           <EventForm
             setIsModalOpen={setIsModalOpen}
             setSubmitMessage={setSubmitMessage}
+            userEmail={userEmail}
           />
         </div>
       )}

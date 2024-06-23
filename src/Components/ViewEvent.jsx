@@ -2,12 +2,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { AuthContext } from "../AuthContext"; // Import AuthContext
+import { AuthContext } from "../AuthContext";
 
 const ViewEvent = () => {
   const { id } = useParams();
   const { user } = useContext(AuthContext);
-  console.log(user); // Access user object from AuthContext
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,13 +20,6 @@ const ViewEvent = () => {
       try {
         const response = await axios.get(`http://localhost:5000/events/${id}`);
         setEvent(response.data);
-        // Populate name and email with user information on component mount
-        if (user) {
-          console.log(user.user.name);
-          // Check if user and user.email are defined
-          setParticipantEmail(user.user.email);
-          setParticipantName(user.user.name);
-        }
       } catch (error) {
         setError(error.message);
       } finally {
@@ -36,7 +28,15 @@ const ViewEvent = () => {
     };
 
     fetchEvent();
-  }, [id, user]); // Include user dependency in useEffect
+  }, [id]);
+
+  useEffect(() => {
+    // Populate name and email with user information when user changes
+    if (user && user.user) {
+      setParticipantName(user.user.name);
+      setParticipantEmail(user.user.email);
+    }
+  }, [user]);
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();

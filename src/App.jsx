@@ -55,6 +55,8 @@ const App = () => {
                   <Route path="/" element={<Homepage />} />
                   <Route path="/events" element={<Event />} />
                   <Route path="/events/:id" element={<ViewEvent />} />
+                  <Route path="/my-events" element={<ViewEvent />} />
+
                   <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
               </div>
