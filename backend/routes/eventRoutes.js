@@ -11,6 +11,7 @@ router.get("/", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 // Get a single event by ID
 router.get("/:id", async (req, res) => {
   try {
@@ -21,6 +22,7 @@ router.get("/:id", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
 // Create a new event
 router.post("/", async (req, res) => {
   const event = new Event({
@@ -39,18 +41,38 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Delete an event
-router.delete("/:id", async (req, res) => {
+// Update an event
+router.put("/:id", async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
     if (!event) return res.status(404).json({ message: "Event not found" });
 
-    await event.remove();
+    event.name = req.body.name || event.name;
+    event.date = req.body.date || event.date;
+    event.description = req.body.description || event.description;
+    event.image = req.body.image || event.image;
+    event.email = req.body.email || event.email;
+
+    const updatedEvent = await event.save();
+    res.json(updatedEvent);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+});
+
+// Delete an event
+router.delete("/:id", async (req, res) => {
+  try {
+    const event = await Event.findByIdAndDelete(req.params.id);
+    if (!event) {
+      return res.status(404).json({ message: "Event not found" });
+    }
     res.json({ message: "Event deleted" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 });
+
 router.get("/my-events/:email", async (req, res) => {
   try {
     const events = await Event.find({ email: req.params.email });

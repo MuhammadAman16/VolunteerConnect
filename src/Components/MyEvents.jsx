@@ -1,46 +1,66 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-// Mock data for demonstration purposes
-const mockEvents = [
-  {
-    id: 1,
-    name: "ABC Day 2024",
-    description: "Join us at our annual volunteer event to make a difference in the community.",
-    startDate: "2024-11-05",
-    endDate: "2024-11-07",
-    imageUrl: "https://www.simplilearn.com/ice9/free_resources_article_thumb/what_is_image_Processing.jpg",
-  },
-  {
-    id: 2,
-    name: "Event 2",
-    description: "Description 2",
-    startDate: "2024-10-15",
-    endDate: "2024-10-16",
-    imageUrl: "https://img-cdn.pixlr.com/image-generator/history/65bb506dcb310754719cf81f/ede935de-1138-4f66-8ed7-44bd16efc709/medium.webp",
-  },
-];
+import axios from "axios";
+import { AuthContext } from "../AuthContext.jsx";
 
 const MyEvents = () => {
-  const [events, setEvents] = useState(mockEvents);
+  const { user } = useContext(AuthContext);
+  const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchEvent = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/events/my-events/${user.user.email}`
+        );
+        setEvents(response.data);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (user?.user.email) {
+      fetchEvent();
+    }
+  }, [user]);
 
   const handleEdit = (event) => {
     setSelectedEvent(event);
     setShowForm(true);
   };
 
-  const handleDelete = (id) => {
-    setEvents(events.filter((event) => event.id !== id));
+  const handleDelete = async (_id) => {
+    try {
+      await axios.delete(`http://localhost:5000/events/${_id}`);
+      setEvents(events.filter((event) => event._id !== _id));
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
   };
 
-  const handleFormSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-    // Update event logic here
-    setEvents(events.map(event => event.id === selectedEvent.id ? selectedEvent : event));
-    setShowForm(false);
+    try {
+      await axios.put(
+        `http://localhost:5000/events/${selectedEvent._id}`,
+        selectedEvent
+      );
+      setEvents(
+        events.map((event) =>
+          event._id === selectedEvent._id ? selectedEvent : event
+        )
+      );
+      setShowForm(false);
+    } catch (error) {
+      console.error("Error updating event:", error);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -48,36 +68,42 @@ const MyEvents = () => {
     setSelectedEvent({ ...selectedEvent, [name]: value });
   };
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-2xl font-bold mb-4">My Events</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 ">
         {events.map((event) => (
           <div
-            key={event.id}
-            className="bg-white p-4 rounded-lg shadow-md flex items-center"
+            key={event._id}
+            className="bg-white p-4 rounded-lg shadow-md flex items-center bg-gray-200"
           >
             <img
-              src={event.imageUrl}
+              src={event.image}
               alt={event.name}
               className="w-32 h-32 object-cover rounded-lg mr-4"
             />
             <div className="flex-1">
               <h3 className="text-xl font-semibold">{event.name}</h3>
               <p className="text-gray-600">{event.description}</p>
-              <p className="text-gray-500">
-                {event.startDate} to {event.endDate}
-              </p>
+              <p className="text-gray-500">{event.date}</p>
               <div className="flex space-x-2 mt-4">
                 <button
-                  className="bg-blue-500 text-white px-4 py-1 rounded-2xl"
+                  className="bg-customgreen text-white px-4 py-1 rounded-2xl"
                   onClick={() => handleEdit(event)}
                 >
                   Edit
                 </button>
                 <button
                   className="bg-red-500 text-white px-3 py-1 rounded-2xl"
-                  onClick={() => handleDelete(event.id)}
+                  onClick={() => handleDelete(event._id)}
                 >
                   Delete
                 </button>
@@ -113,18 +139,7 @@ const MyEvents = () => {
                 <input
                   type="date"
                   name="startDate"
-                  value={selectedEvent.startDate}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border rounded-lg"
-                  required
-                />
-              </div>
-              <div className="mb-4">
-                <label className="block text-sm font-medium">End Date</label>
-                <input
-                  type="date"
-                  name="endDate"
-                  value={selectedEvent.endDate}
+                  value={selectedEvent.date}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border rounded-lg"
                   required
@@ -144,8 +159,8 @@ const MyEvents = () => {
                 <label className="block text-sm font-medium">Image URL</label>
                 <input
                   type="text"
-                  name="imageUrl"
-                  value={selectedEvent.imageUrl}
+                  name="image"
+                  value={selectedEvent.image}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border rounded-lg"
                   required
@@ -161,7 +176,7 @@ const MyEvents = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1  text-white rounded-xl bg-customgreen1"
+                  className="px-4 py-1 text-white rounded-xl bg-customgreen1"
                 >
                   Submit
                 </button>

@@ -7,6 +7,7 @@ import Event from "./Components/Event.jsx";
 import ViewEvent from "./Components/ViewEvent.jsx";
 import Login from "./Components/Login.jsx";
 import Signup from "./Components/Signup.jsx";
+import MyEvents from "./Components/MyEvents.jsx";
 import {
   BrowserRouter as Router,
   Route,
@@ -55,7 +56,7 @@ const App = () => {
                   <Route path="/" element={<Homepage />} />
                   <Route path="/events" element={<Event />} />
                   <Route path="/events/:id" element={<ViewEvent />} />
-                  <Route path="/my-events" element={<ViewEvent />} />
+                  <Route path="/my-events" element={<MyEvents />} />
 
                   <Route path="*" element={<Navigate to="/" />} />
                 </Routes>
